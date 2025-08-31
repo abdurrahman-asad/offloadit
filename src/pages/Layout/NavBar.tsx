@@ -1,20 +1,22 @@
 import {
-  Button,
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@ui';
-import { TbMenu3, TbSettings, TbLogout } from 'react-icons/tb';
-import { Link, useNavigate } from 'react-router';
+import { TbUserCircle, TbSettings, TbLogout } from 'react-icons/tb';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { ThemeToggle } from './ThemeToggle';
 import { supabase } from '@sb';
 import { toast } from '@ui';
 import { LuBrainCircuit } from 'react-icons/lu';
+import { useAuth } from '../../hooks';
 
 function Menu() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const avatarUrl = user?.user_metadata?.avatar_url;
 
   const handleLogout = async () => {
     try {
@@ -28,9 +30,13 @@ function Menu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" aria-label="menu-button">
-          <TbMenu3 />
-        </Button>
+        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center cursor-pointer">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="User Avatar" className="w-full h-full rounded-full" />
+          ) : (
+            <TbUserCircle size={24} />
+          )}
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="*:cursor-pointer **:text-[1rem]" align="end">
         <Link to="/settings">
@@ -50,11 +56,23 @@ function Menu() {
 }
 
 export const NavBar = () => {
+  const location = useLocation();
+
+  const isActive = (path: string) => (location.pathname === path ? 'text-primary' : '');
+
   return (
     <div className="flex justify-between p-4 border-b-1">
       <div className="flex items-center">
         <LuBrainCircuit className="text-primary" size={26} />
         <p className="text-2xl">OffloadIt</p>
+      </div>
+      <div className="flex items-center gap-8 *:hover:text-primary font-semibold">
+        <Link to="/" className={isActive('/')}>
+          Home
+        </Link>
+        <Link to="/scheduled-agents" className={isActive('/scheduled-agents')}>
+          Scheduled Agents
+        </Link>
       </div>
       <div className="flex gap-2">
         <ThemeToggle />
