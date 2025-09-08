@@ -6,7 +6,7 @@ import type { User } from '@supabase/supabase-js';
 export interface Task {
   id: string;
   description: string;
-  is_completed: boolean;
+  is_complete: boolean;
   created_at: string;
   created_by: User;
 }
@@ -43,18 +43,16 @@ export const useTasks = () => {
 
   const createTask = async (description: string) => {
     try {
-      const { data, error: supabaseError } = await supabase
-        .schema('api')
-        .from('tasks')
-        .insert({ description })
-        .select()
-        .single();
+      const { data, error: supabaseError } = await supabase.functions.invoke('create-task', {
+        body: { description },
+        method: 'POST',
+      });
 
       if (supabaseError) {
         throw supabaseError;
       }
 
-      setTasks(prev => [data, ...prev]);
+      setTasks(prev => [{ ...data }, ...prev]);
       toast.success('Task created successfully!');
       return data;
     } catch (err) {

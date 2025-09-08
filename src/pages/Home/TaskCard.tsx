@@ -1,5 +1,5 @@
 import { Calendar, User } from 'lucide-react';
-import { Card, CardContent, CardHeader, Badge, CardTitle } from '@ui';
+import { Card, CardContent, Badge } from '@ui';
 import type { Task } from '../../hooks/useTasks';
 
 interface TaskCardProps {
@@ -18,21 +18,19 @@ const formatDate = (dateString: string) => {
 export const TaskCard = ({ task, onClick }: TaskCardProps) => {
   return (
     <Card
-      className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      className="justify-between cursor-pointer hover:shadow-lg transition-shadow duration-200"
       onClick={onClick}>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <CardTitle className="break-words hyphens-auto line-clamp-3 pr-2">
-            {task.description}
-          </CardTitle>
-          <Badge variant={task.is_completed ? 'default' : 'secondary'}>
-            {task.is_completed ? 'Completed' : 'Running'}
-          </Badge>
-        </div>
-      </CardHeader>
+      <div className="flex items-start justify-between px-4">
+        <p className="break-words hyphens-auto line-clamp-2 pr-2 leading-tight">
+          {task.description}
+        </p>
+        <Badge variant={task.is_complete ? 'default' : 'secondary'}>
+          {task.is_complete ? 'Completed' : 'Running'}
+        </Badge>
+      </div>
 
       <CardContent>
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-end justify-between text-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />

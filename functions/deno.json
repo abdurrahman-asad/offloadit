@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "dev": "deno run --env-file=.env.local --watch -A create-task.ts"
+  },
+  "imports": {}
+}
