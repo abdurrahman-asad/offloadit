@@ -42,7 +42,7 @@ export const CreateTaskModal = ({ isOpen, onClose, onSubmit }: CreateTaskModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent onInteractOutside={e => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
