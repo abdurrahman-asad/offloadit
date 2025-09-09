@@ -7,6 +7,9 @@ export interface Task {
   id: string;
   description: string;
   is_complete: boolean;
+  output: string | null;
+  destination: string | null;
+  destination_value: string | null;
   created_at: string;
   created_by: User;
 }
@@ -41,10 +44,23 @@ export const useTasks = () => {
     }
   };
 
-  const createTask = async (description: string) => {
+  const createTask = async (
+    description: string,
+    destination: string | null = null,
+    destinationValue: string | null = null,
+  ) => {
     try {
+      // Validation: if destination is provided, destination_value must also be provided
+      if (destination && !destinationValue?.trim()) {
+        throw new Error('Destination value is required when destination is selected');
+      }
+
       const { data, error: supabaseError } = await supabase.functions.invoke('create-task', {
-        body: { description },
+        body: {
+          description,
+          destination,
+          destination_value: destinationValue,
+        },
         method: 'POST',
       });
 
@@ -52,7 +68,7 @@ export const useTasks = () => {
         throw supabaseError;
       }
 
-      setTasks(prev => [{ ...data }, ...prev]);
+      setTasks(prev => [data.data, ...prev]);
       toast.success('Task created successfully!');
       return data;
     } catch (err) {
