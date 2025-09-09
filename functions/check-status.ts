@@ -4,6 +4,47 @@ import { BrowserUseClient } from 'npm:browser-use-sdk@2.0.3';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const sendEmail = async (
+  to: string,
+  taskDescription: string,
+  taskOutput: string,
+  taskId: string,
+) => {
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Deno.env.get('RESEND_KEY')}`,
+      },
+      body: JSON.stringify({
+        from: 'OffloadIt <no-reply@notifications.offloadit.ai>',
+        to,
+        subject: 'Your task has been completed!',
+        html: `
+            <h2>Task Completed ✅</h2>
+            <p>Your task has been completed successfully!</p>
+
+            <h3>Task Description:</h3>
+            <p>${taskDescription}</p>
+
+            <hr/>
+
+            <h3>Output:</h3>
+            <pre>${taskOutput}</pre>
+
+            <br>
+            <p>Thanks for using OffloadIt!</p>
+          `,
+      }),
+    });
+    const data = await res.json();
+    console.log(`Sent email to ${to} with ID: ${JSON.stringify(data)}, task ID: ${taskId}`);
+  } catch (error) {
+    console.error('Error sending email for task ID:', taskId, (error as Error).message);
+  }
+};
+
 const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: SupabaseClient) => {
   // If attempt is greater than 3, mark task as failed and complete
   if (attempt > 3) {
@@ -37,14 +78,16 @@ const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: 
 
       // If task is finished, update database and return
       if (task.finishedAt) {
-        const { error: updateError } = await supabaseClient
+        const { data, error: updateError } = await supabaseClient
           .schema('api')
           .from('tasks')
           .update({
             output: task.output || `Task ${task.status}`,
             is_complete: true,
           })
-          .eq('bu_task_id', taskId);
+          .eq('bu_task_id', taskId)
+          .select()
+          .single();
 
         if (updateError) {
           console.error('Error updating task:', updateError);
@@ -54,6 +97,17 @@ const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: 
         console.log(
           `Task ${taskId} successfully updated in database with output: ${task.output || `Task ${task.status}`}`,
         );
+
+        // Send email notification
+        if (data.destination === 'email') {
+          await sendEmail(
+            data.destination_value,
+            data.description,
+            task.output || `Task ${task.status}`,
+            data.id,
+          );
+        }
+
         return;
       }
 

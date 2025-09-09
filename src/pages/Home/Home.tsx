@@ -9,8 +9,12 @@ export const Home = () => {
   const { tasks, loading, error, createTask } = useTasks();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const handleCreateTask = async (taskDescription: string) => {
-    await createTask(taskDescription);
+  const handleCreateTask = async (
+    taskDescription: string,
+    destination: string | null,
+    destinationValue: string | null,
+  ) => {
+    await createTask(taskDescription, destination, destinationValue);
   };
 
   if (loading) {

@@ -11,3 +11,4 @@ export * from './components/toast';
 export * from './components/Tooltip';
 export * from './components/Checkbox';
 export * from './components/Dialog';
+export * from './components/Select';
