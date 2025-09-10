@@ -12,6 +12,7 @@ export interface Task {
   destination_value: string | null;
   created_at: string;
   created_by: User;
+  is_deleted: boolean;
 }
 
 export const useTasks = () => {
@@ -27,6 +28,7 @@ export const useTasks = () => {
         .schema('api')
         .from('tasks')
         .select('*, created_by:users (*)')
+        .eq('is_deleted', false)
         .limit(10)
         .order('created_at', { ascending: false });
 
@@ -79,9 +81,30 @@ export const useTasks = () => {
 
   const updateTask = async (id: string, updates: Partial<Omit<Task, 'id' | 'created_at'>>) => {
     try {
+      // If this is a deletion operation, don't expect data back
+      if (updates.is_deleted === true) {
+        const { error: supabaseError } = await supabase
+          .schema('api')
+          .from('tasks')
+          .update(updates)
+          .eq('id', id);
+
+        if (supabaseError) {
+          throw supabaseError;
+        }
+
+        // Remove the task from local state since it's now deleted
+        setTasks(prev => prev.filter(task => task.id !== id));
+        toast.success('Task deleted successfully!');
+        return;
+      }
+
+      // For non-deletion updates, get the data back
       const { data, error: supabaseError } = await supabase
+        .schema('api')
         .from('tasks')
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        .update({ ...updates })
+        // .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
@@ -101,23 +124,23 @@ export const useTasks = () => {
     }
   };
 
-  const deleteTask = async (id: string) => {
-    try {
-      const { error: supabaseError } = await supabase.from('tasks').delete().eq('id', id);
+  // const deleteTask = async (id: string) => {
+  //   try {
+  //     const { error: supabaseError } = await supabase.from('tasks').delete().eq('id', id);
 
-      if (supabaseError) {
-        throw supabaseError;
-      }
+  //     if (supabaseError) {
+  //       throw supabaseError;
+  //     }
 
-      setTasks(prev => prev.filter(task => task.id !== id));
-      toast.success('Task deleted successfully!');
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete task';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    }
-  };
+  //     setTasks(prev => prev.filter(task => task.id !== id));
+  //     toast.success('Task deleted successfully!');
+  //   } catch (err) {
+  //     const errorMessage = err instanceof Error ? err.message : 'Failed to delete task';
+  //     setError(errorMessage);
+  //     toast.error(errorMessage);
+  //     throw err;
+  //   }
+  // };
 
   useEffect(() => {
     fetchTasks();
@@ -130,6 +153,6 @@ export const useTasks = () => {
     fetchTasks,
     createTask,
     updateTask,
-    deleteTask,
+    // deleteTask,
   };
 };

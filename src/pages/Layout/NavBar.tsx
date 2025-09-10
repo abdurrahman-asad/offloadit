@@ -1,11 +1,5 @@
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@ui';
-import { TbUserCircle, TbSettings, TbLogout } from 'react-icons/tb';
+import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@ui';
+import { TbUserCircle, TbLogout } from 'react-icons/tb';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { ThemeToggle } from './ThemeToggle';
 import { supabase } from '@sb';
@@ -39,13 +33,13 @@ function Menu() {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="*:cursor-pointer **:text-[1rem]" align="end">
-        <Link to="/settings">
+        {/* <Link to="/settings">
           <DropdownMenuItem className="cursor-pointer">
             <TbSettings className="text-foreground" />
             Settings
           </DropdownMenuItem>
         </Link>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator /> */}
         <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
           <TbLogout className="text-foreground" />
           Logout
@@ -62,10 +56,12 @@ export const NavBar = () => {
 
   return (
     <div className="flex justify-between p-4 border-b-1">
-      <div className="flex items-center">
-        <LuBrainCircuit className="text-primary" size={26} />
-        <p className="text-2xl">OffloadIt</p>
-      </div>
+      <Link to="/">
+        <div className="flex items-center">
+          <LuBrainCircuit className="text-primary" size={26} />
+          <p className="text-2xl">OffloadIt</p>
+        </div>
+      </Link>
       <div className="flex items-center gap-8 *:hover:text-primary font-semibold">
         <Link to="/" className={isActive('/')}>
           Home

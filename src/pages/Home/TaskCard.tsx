@@ -16,17 +16,25 @@ const formatDate = (dateString: string) => {
 };
 
 export const TaskCard = ({ task, onClick }: TaskCardProps) => {
+  const getTaskStatus = () => {
+    if (!task.is_complete) {
+      return { label: 'Running', variant: 'secondary' as const };
+    }
+    if (task.is_complete && !task.output) {
+      return { label: 'Failed', variant: 'destructive' as const };
+    }
+    return { label: 'Completed', variant: 'default' as const };
+  };
+
+  const status = getTaskStatus();
+
   return (
     <Card
       className="justify-between cursor-pointer hover:shadow-lg transition-shadow duration-200"
       onClick={onClick}>
       <div className="flex items-start justify-between px-4">
-        <p className="break-words hyphens-auto line-clamp-2 pr-2 leading-tight">
-          {task.description}
-        </p>
-        <Badge variant={task.is_complete ? 'default' : 'secondary'}>
-          {task.is_complete ? 'Completed' : 'Running'}
-        </Badge>
+        <p className="break-words hyphens-auto line-clamp-1 pr-2">{task.description}</p>
+        <Badge variant={status.variant}>{status.label}</Badge>
       </div>
 
       <CardContent>
