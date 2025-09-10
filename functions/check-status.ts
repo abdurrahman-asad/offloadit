@@ -77,13 +77,17 @@ const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: 
 
       // If task is finished, update database and return
       if (task.finishedAt) {
+        const updateData: { is_complete: boolean; output?: string } = {
+          is_complete: true,
+        };
+        if (task.isSuccess) {
+          updateData.output = task.output;
+        }
+
         const { data, error: updateError } = await supabaseClient
           .schema('api')
           .from('tasks')
-          .update({
-            ...(task.isSuccess ? { output: task.output } : {}),
-            is_complete: true,
-          })
+          .update(updateData)
           .eq('bu_task_id', taskId)
           .select()
           .single();
