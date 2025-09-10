@@ -54,7 +54,6 @@ const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: 
       .schema('api')
       .from('tasks')
       .update({
-        output: 'Task failed',
         is_complete: true,
       })
       .eq('bu_task_id', taskId);
@@ -82,7 +81,7 @@ const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: 
           .schema('api')
           .from('tasks')
           .update({
-            output: task.output || `Task ${task.status}`,
+            ...(task.isSuccess ? { output: task.output } : {}),
             is_complete: true,
           })
           .eq('bu_task_id', taskId)
@@ -94,18 +93,11 @@ const checkTaskStatus = async (taskId: string, attempt: number, supabaseClient: 
           throw updateError;
         }
 
-        console.log(
-          `Task ${taskId} successfully updated in database with output: ${task.output || `Task ${task.status}`}`,
-        );
+        console.log(`Task ${taskId} successfully updated in database with status: ${task.status}`);
 
         // Send email notification
-        if (data.destination === 'email') {
-          await sendEmail(
-            data.destination_value,
-            data.description,
-            task.output || `Task ${task.status}`,
-            data.id,
-          );
+        if (data.destination === 'email' && task.isSuccess) {
+          await sendEmail(data.destination_value, data.description, task.output!, data.id);
         }
 
         return;
