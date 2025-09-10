@@ -4,10 +4,13 @@ import { useTasks } from '../../hooks';
 import { Button } from '../../ui';
 import { TaskCard } from './TaskCard';
 import { CreateTaskModal } from './CreateTaskModal';
+import { TaskDetailsModal } from './TaskDetailsModal';
+import type { Task } from '../../hooks/useTasks';
 
 export const Home = () => {
-  const { tasks, loading, error, createTask } = useTasks();
+  const { tasks, loading, error, createTask, updateTask } = useTasks();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const handleCreateTask = async (
     taskDescription: string,
@@ -66,14 +69,7 @@ export const Home = () => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {tasks.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onClick={() => {
-                // TODO: Handle task click (e.g., open task details modal)
-                console.log('Task clicked:', task);
-              }}
-            />
+            <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
           ))}
         </div>
       )}
@@ -82,6 +78,13 @@ export const Home = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateTask}
+      />
+
+      <TaskDetailsModal
+        isOpen={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+        task={selectedTask}
+        onUpdateTask={updateTask}
       />
     </div>
   );

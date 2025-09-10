@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TbPlus, TbX } from 'react-icons/tb';
+import { TbPlus, TbX, TbLoader2 } from 'react-icons/tb';
 import {
   Dialog,
   DialogContent,
@@ -102,7 +102,7 @@ export const CreateTaskModal = ({ isOpen, onClose, onSubmit }: CreateTaskModalPr
                     setDestination(null);
                     setDestinationValue('');
                   }}>
-                  <TbX className="h-4 w-4" />
+                  <TbX />
                 </Button>
               )}
             </div>
@@ -137,7 +137,10 @@ export const CreateTaskModal = ({ isOpen, onClose, onSubmit }: CreateTaskModalPr
                 !description.trim() || (destination && !destinationValue.trim()) || isSubmitting
               }>
               {isSubmitting ? (
-                'Creating...'
+                <>
+                  <TbLoader2 className="animate-spin" />
+                  Creating
+                </>
               ) : (
                 <>
                   <TbPlus />
