@@ -5,12 +5,12 @@ import { ThemeToggle } from './ThemeToggle';
 import { supabase } from '@sb';
 import { toast } from '@ui';
 import { LuBrainCircuit } from 'react-icons/lu';
-import { useAuth } from '../../hooks';
+// import { useAuth } from '../../hooks';
 
 function Menu() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const avatarUrl = user?.user_metadata?.avatar_url;
+  // const { user } = useAuth();
+  const avatarUrl = null; //user?.user_metadata?.avatar_url;
 
   const handleLogout = async () => {
     try {
@@ -66,9 +66,9 @@ export const NavBar = () => {
         <Link to="/" className={isActive('/')}>
           Home
         </Link>
-        <Link to="/scheduled-agents" className={isActive('/scheduled-agents')}>
+        {/* <Link to="/scheduled-agents" className={isActive('/scheduled-agents')}>
           Scheduled Agents
-        </Link>
+        </Link> */}
       </div>
       <div className="flex gap-2">
         <ThemeToggle />

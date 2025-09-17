@@ -24,14 +24,14 @@ const checkAuth = async (supabase: SupabaseClient) => {
 const createBUTask = (description: string) => {
   const client = new BrowserUseClient({ apiKey: Deno.env.get('BROWSER_USE_API_KEY')! });
   return client.tasks.createTask({
-    flashMode: true,
     task: description,
     llm: 'claude-sonnet-4-20250514',
-    // systemPromptExtension: `
-    // Speed optimization instructions:
-    // - Be extremely concise and direct in your responses
-    // - Get to the goal as quickly as possible
-    // - Use multi-action sequences whenever possible to reduce steps`,
+    systemPromptExtension: `
+    Speed optimization instructions:
+    - Be extremely concise and direct in your responses
+    - Get to the goal as quickly as possible
+    - Do not use markdown in the final output unless instructed
+    - Use multi-action sequences whenever possible to reduce steps`,
   });
 };
 
