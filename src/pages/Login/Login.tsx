@@ -4,7 +4,7 @@ import { Button } from '@ui';
 import { Input } from '@ui';
 import { Label } from '@ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate } from 'react-router';
 import { LuBrainCircuit } from 'react-icons/lu';
 
 export const Login = () => {
@@ -81,12 +81,12 @@ export const Login = () => {
                 {isLoading ? 'Logging in...' : 'Login'}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
+            {/* <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{' '}
               <Link to="/sign-up" className="underline underline-offset-4">
                 Sign up
               </Link>
-            </div>
+            </div> */}
           </form>
         </CardContent>
       </Card>
